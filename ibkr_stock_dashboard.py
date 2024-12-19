@@ -9,6 +9,12 @@ from datetime import datetime
 
 TRADE_REPORT_FILE = 'trade_reporting/trade_report.csv'  
 
+# Access AWS credentials from Streamlit secrets
+AWS_ACCESS_KEY_ID = st.secrets["aws"]["aws_access_key_id"]
+AWS_SECRET_ACCESS_KEY = st.secrets["aws"]["aws_secret_access_key"]
+S3_BUCKET_NAME = st.secrets["aws"]["bucket_name"]
+
+
 def load_data_from_s3(file_name):
     """Load CSV data from S3."""
     s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
