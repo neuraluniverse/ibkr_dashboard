@@ -64,7 +64,7 @@ def main():
     col4.metric("Total Unrealized", f"${total_unrealized:,.2f}")
 
     # Dropdown to filter by trade status (after placards)
-    status_filter = st.selectbox("Filter by Trade Status", options=["All", "Open", "Close"], index=0)  # Default to "All"
+    status_filter = st.selectbox("Filter by Trade Status", options=["Open", "All",  "Close"], index=0)  # Default to "All"
     
     if status_filter == "Open":
         filtered_df = trade_df[trade_df['Pos'] == 'open']
