@@ -1,2 +1,2 @@
 boto3==1.26.10
-redshift-connector==2.0.901
+redshift-connector==2.1.5
