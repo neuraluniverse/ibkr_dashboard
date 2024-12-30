@@ -7,60 +7,6 @@ from datetime import datetime
 import redshift_connector
 import toml
 
-#Add authentication credentials
-# Access secrets
-USERNAME = st.secrets["credentials"]["username"]
-PASSWORD = st.secrets["credentials"]["password"]
-
-def login():
-    st.title("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if username == USERNAME and password == PASSWORD:
-            st.session_state["authenticated"] = True
-            st.success("Login successful!")
-        else:
-            st.error("Invalid username or password.")
-
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-if not st.session_state["authenticated"]:
-    login()
-else:
-    st.title("Welcome to the App")
-    st.write("This is the main content of your app.")
-    if st.button("Logout"):
-        st.session_state["authenticated"] = False
-        st.experimental_rerun()# Access secrets
-USERNAME = st.secrets["credentials"]["username"]
-PASSWORD = st.secrets["credentials"]["password"]
-
-def login():
-    st.title("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if username == USERNAME and password == PASSWORD:
-            st.session_state["authenticated"] = True
-            st.success("Login successful!")
-        else:
-            st.error("Invalid username or password.")
-
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-if not st.session_state["authenticated"]:
-    login()
-else:
-    st.title("Welcome to the App")
-    st.write("This is the main content of your app.")
-    if st.button("Logout"):
-        st.session_state["authenticated"] = False
-        st.experimental_rerun()
-
-
 # Load the secrets from the local secret_keys.toml file.
 #secrets = toml.load("secret_keys.toml")
 
