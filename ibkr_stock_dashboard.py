@@ -3,17 +3,65 @@ import pandas as pd
 import boto3
 from io import StringIO
 import altair as alt
-
-import streamlit as st
 from datetime import datetime
+import redshift_connector
+import toml
 
-TRADE_REPORT_FILE = 'trade_reporting/trade_report.csv'  
+# Load the secrets from the local secret_keys.toml file.
+#secrets = toml.load("secret_keys.toml")
+
+TRADE_REPORT_FILE = 'trade_reporting/trade_report.csv'
 
 # Access AWS credentials from Streamlit secrets
 AWS_ACCESS_KEY_ID = st.secrets["aws"]["aws_access_key_id"]
 AWS_SECRET_ACCESS_KEY = st.secrets["aws"]["aws_secret_access_key"]
 S3_BUCKET_NAME = st.secrets["aws"]["bucket_name"]
 
+def get_redshift_connection(
+    redshift_host = st.secrets["aws"]["redshift_host"],
+    redshift_dbname = st.secrets["aws"]["redshift_dbname"], 
+    redshift_user = st.secrets["aws"]["redshift_user"], 
+    redshift_password = st.secrets["aws"]["redshift_password"], 
+    redshift_port = st.secrets["aws"]["redshift_port"]
+): 
+    print('get_redshift_connection')
+    conn = redshift_connector.connect(
+        host = redshift_host, 
+        database=redshift_dbname, 
+        port = redshift_port, 
+        user = redshift_user, 
+        password = redshift_password,
+    )
+    conn.autocommit = True
+    return conn
+
+redshift_conn = get_redshift_connection()
+
+def get_bobby_entries(redshift_conn):
+    cursor = redshift_conn.cursor()
+    q = '''
+        select * from bobby_entries
+        order by datadate desc
+    '''
+    cursor.execute(q)
+    result = cursor.fetchall()
+    colnames = [desc[0] for desc in cursor.description]
+    df = pd.DataFrame(result, columns=colnames)
+    return df
+
+def get_high_low_entries(redshift_conn):
+    cursor = redshift_conn.cursor()
+    q = '''
+        select * from high_low_entries order by date desc
+    '''
+    cursor.execute(q)
+    result = cursor.fetchall()
+    colnames = [desc[0] for desc in cursor.description]
+    df = pd.DataFrame(result, columns=colnames)
+    return df
+
+bobby_entries = get_bobby_entries(redshift_conn)
+high_low_entries = get_high_low_entries(redshift_conn)
 
 def load_data_from_s3(file_name):
     """Load CSV data from S3."""
@@ -25,6 +73,7 @@ def load_data_from_s3(file_name):
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return None
+
 def main():
     st.title("Portfolio")
 
@@ -63,7 +112,7 @@ def main():
     col3.metric("Percent ROI", f"{percent_roi:.2f}%")
     col4.metric("Total Unrealized", f"${total_unrealized:,.2f}")
 
-    # Dropdown to filter by trade status (after placards)
+    # Dropdown to filter by trade status
     status_filter = st.selectbox("Filter by Trade Status", options=["Open", "All",  "Close"], index=0)  # Default to "All"
     
     if status_filter == "Open":
@@ -131,6 +180,14 @@ def main():
         .properties(height=400, title="Proportion of Closed Entries by Symbol")
     )
     st.altair_chart(pie_chart, use_container_width=True)
+
+    # Display Bobby Entries Table
+    st.subheader("Bobby Entries")
+    st.dataframe(bobby_entries, use_container_width=True, hide_index=True)
+
+    # Display High Low Entries Table
+    st.subheader("High Low Entries")
+    st.dataframe(high_low_entries, use_container_width=True, hide_index=True)
 
 
 if __name__ == "__main__":
