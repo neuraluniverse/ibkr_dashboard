@@ -75,7 +75,6 @@ def load_data_from_s3(file_name):
         return None
 
 def main():
-    st.title("Portfolio")
 
     # Load trade report data
     trade_df = load_data_from_s3(TRADE_REPORT_FILE)
