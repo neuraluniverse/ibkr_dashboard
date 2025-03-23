@@ -99,7 +99,7 @@ def main():
 
     # Display open trade entries
     st.subheader("Trade Entries")
-    display_columns = ['Symbol', 'Expiry', 'FifoPnlRealized', 'Strike', 'PositionValue']
+    display_columns = ['Symbol', 'Expiry', 'FifoPnlUnrealized', 'Strike', 'PositionValue']
     st.dataframe(open_positions_df[display_columns], use_container_width=True, hide_index=True)
 
     # Horizontal bar chart sorted by top profit (exclude blank profits)
