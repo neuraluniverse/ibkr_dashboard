@@ -96,9 +96,12 @@ def main():
     col1, col2 = st.columns(2)
     col1.metric("Total Profit", f"${total_profit:,.2f}")
     col2.metric("Total Unrealized", f"${total_unrealized:,.2f}")
+    # Ensure Expiry column is in datetime format
+    open_positions_df['Expiry'] = pd.to_datetime(open_positions_df['Expiry'], format='%Y-%m-%d', errors='coerce')
+
     # Derive DTE (Days to Expiration)
     today = datetime.today().date()
-    open_positions_df['DTE'] = open_positions_df['Expiry'].apply(lambda x: (datetime.strptime(x, '%Y-%m-%d').date() - today).days)
+    open_positions_df['DTE'] = open_positions_df['Expiry'].apply(lambda x: (x.date() - today).days if pd.notnull(x) else None)
 
 
     # Sort open positions by Expiry
