@@ -96,7 +96,9 @@ def main():
     col1, col2 = st.columns(2)
     col1.metric("Total Profit", f"${total_profit:,.2f}")
     col2.metric("Total Unrealized", f"${total_unrealized:,.2f}")
-
+    # Sort open positions by Expiry
+    open_positions_df = open_positions_df.sort_values(by='Expiry')
+    
     # Display open trade entries
     st.subheader("Trade Entries")
     display_columns = ['Symbol', 'Expiry', 'FifoPnlUnrealized', 'Strike', 'PositionValue']
