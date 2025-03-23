@@ -88,7 +88,7 @@ def main():
         return
 
     # Calculate summary metrics for open positions
-    total_profit = open_positions_df['FifoPnlRealized'].sum()
+    total_profit = prior_positions_df['FifoPnlRealized'].sum()
     total_unrealized = open_positions_df['FifoPnlUnrealized'].sum()
 
     # Placards for summary metrics
